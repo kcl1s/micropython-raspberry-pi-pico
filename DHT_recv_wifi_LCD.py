@@ -20,7 +20,7 @@ def connect():
     while good_connection == False:
         wlan = network.WLAN(network.STA_IF)
         wlan.active(True)
-        wlan.connect('gh', 'Jean&Keith')
+        wlan.connect('your network','your password')
         for ct in range(5):
             if wlan.isconnected() == True:
                 good_connection= True
@@ -33,7 +33,7 @@ def connect():
 # function to open socket and request data from server
 def get_reading():
     s = socket.socket() # Open socket
-    s.connect(('192.168.1.221',80))
+    s.connect(('server IP<change>',80))
     s.send("Get DHT Data") # Send request
     DHT_data = s.recv(512)
     data_string = DHT_data.decode("utf-8")
