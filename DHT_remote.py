@@ -13,7 +13,7 @@ def connect():
     while good_connection == False:
         wlan = network.WLAN(network.STA_IF)
         wlan.active(True)
-        wlan.connect('gh', 'Jean&Keith')
+        wlan.connect('your network','your password')
         for ct in range(5):
             if wlan.isconnected() == True:
                 good_connection= True
