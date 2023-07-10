@@ -1,9 +1,9 @@
-from machine import Pin, ADC
+from machine import Pin
 import network
-import random
 import socket
 import time
 from lcd1602cc import LCD
+
 # create LCD object
 lcd= LCD()
 lcd.clear()
