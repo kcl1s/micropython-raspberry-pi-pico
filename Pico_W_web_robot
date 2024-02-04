@@ -1,0 +1,111 @@
+
+import socket
+import network            
+from machine import Pin, PWM
+import time
+import gc
+
+ssid = 'RPI_PICO_AP'       #Set access point name 
+password = '12345678'      #Set your access point password
+
+ctrl_pos = 0
+m_dir = [(0,0,0,0),(.9,0,1,0),(1,0,1,0),(1,0,.9,0),(0,1,1,0),(1,0,0,1),(0,.9,0,1),(0,1,0,1),(0,1,0,.9)]
+m_pins = [3,2,6,7]
+m_drive = [PWM(Pin(x)) for x in m_pins]
+for x in m_drive:
+    x.freq(10000)
+    x.duty_u16(0)
+
+ap = network.WLAN(network.AP_IF)
+ap.config(essid=ssid, password=password)
+ap.active(True)            #activating
+while ap.active() == False:
+  pass
+print('Connection is successful')
+print(ap.ifconfig()[0])
+s = socket.socket()   #creating socket object
+s.bind(('', 80))
+s.listen(5)
+
+
+def webpage():
+    #Template HTML
+    html = f"""
+           <!DOCTYPE html>
+            <html>
+            <head>
+            <style>
+            .b {{height:200px;width:200px;font-size:40px;background-color: #008CBA;border-radius: 15%;color: white;user-select: none;}}
+            </style>
+            </head> 
+            <body>
+            <h1 style= "text-align: center;font-size: 48px;">Robot Control</h1>
+            <br><br>
+            <table style="margin-left: auto;margin-right: auto;">
+            <tr><td>
+            <button type="button" class="b" onpointerdown="mDN('1')" onpointerup="mUP('0')">Forward<br>Left</button>
+            </td><td>
+            <button type="button" class="b" onpointerdown="mDN('2')" onpointerup="mUP('0')">Forward</button>
+            </td><td>
+            <button type="button" class="b" onpointerdown="mDN('3')" onpointerup="mUP('0')">Forward<br>Right</button>
+            </td></tr>
+            <tr><td>
+            <button type="button" class="b" onpointerdown="mDN('4')" onpointerup="mUP('0')">Spin<br>Left</button>
+            </td><td>
+            <button type="button" class="b" onpointerdown="mDN('0')" onpointerup="mUP('0')">Stop</button>
+            </td><td>
+            <button type="button" class="b" onpointerdown="mDN('5')" onpointerup="mUP('0')">Spin<br>Right</button>
+            </td></tr>
+            <tr><td>
+            <button type="button" class="b" onpointerdown="mDN('6')" onpointerup="mUP('0')">Back<br>Left</button>
+            </td><td>
+            <button type="button" class="b" onpointerdown="mDN('7')" onpointerup="mUP('0')">Back</button>
+            </td><td>
+            <button type="button" class="b" onpointerdown="mDN('8')" onpointerup="mUP('0')">Back<br>Right</button>
+            </td></tr>
+            </table>
+            <script>
+            function mDN(s_obj) {{
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "tEvent?"+s_obj, true);
+                xhr.send();
+            }}
+            function mUP(s_obj) {{
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "tEvent?"+s_obj, true);
+                xhr.send();
+            }}
+            document.body.addEventListener("click", ev => {{
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            }}, true);
+            </script>
+            </body>
+            </html>
+            """
+    return str(html)
+
+try:
+    while True:
+        conn, addr = s.accept()
+        #print('Got a connection from %s' % str(addr))
+        request = conn.recv(1024)
+        request = str(request)
+        #print(request)
+        try:
+            request = request.split()[1]
+        except IndexError:
+            pass
+        if request.find('tEvent') > -1:
+            ctrl_pos = int(request.split('?')[1])
+            #print(ctrl_pos)
+            m_now = m_dir[ctrl_pos]
+            for e,x in enumerate(m_drive):
+                x.duty_u16(int(m_now[e] * 65535)) 
+        response = webpage()
+        conn.send(response)
+        conn.close()
+        gc.collect()
+except KeyboardInterrupt:
+    machine.reset()    
+    
