@@ -3,7 +3,7 @@ from machine import Pin
 from neopixel import NeoPixel
 
 
-numP = 60
+numP = 10
 neo_pin = Pin(16, Pin.OUT)   
 pixels = NeoPixel(neo_pin, numP)
     
@@ -26,14 +26,13 @@ def webpage():
             <script>
             var colorPicker = new iro.ColorPicker('#picker', {{
               width: 280,
+              wheelLightness: false,
               color: "rgb(255, 0, 0)",
-              borderWidth: 1,
-              borderColor: "#fff",
+              borderWidth: 5,
+              borderColor: "#000",
             }});
             colorPicker.on('input:end', function(color) {{
-                values.innerHTML = [
-                "rgb: " + color.rgbString,
-                ].join("<br>");
+                values.innerHTML = color.rgbString;
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", color.rgbString, true);
                 xhr.send();
@@ -71,3 +70,5 @@ def serve(connection):
       
 connection = myWifi.connect()
 serve(connection)
+
+
