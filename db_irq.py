@@ -1,3 +1,4 @@
+# Save file in lib folder on device
 from machine import Pin, Timer
 
 class DB_irq:
