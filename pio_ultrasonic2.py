@@ -29,7 +29,7 @@ def ping():
     jmp(x_dec,'ck_echo')    [28]   # ck for timeout < 300
     jmp('do_delay')        # if so jmp to 80 ms delay
     label('ck_echo')
-    jmp(pin,'cm')   [28]   # while echo high jmp to dec
+    jmp(pin,'cm')   [28]   # while echo high jmp to cm
     mov(isr,x)             # when echo goes low send x to isr
     push()                 # then push to fifo
     irq(rel(0))            # trigger irq to "get" value
