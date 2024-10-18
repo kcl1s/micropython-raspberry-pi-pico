@@ -15,7 +15,6 @@ def get_cm(x):
 
 @rp2.asm_pio(set_init=rp2.PIO.OUT_LOW)
 def ping():
-    label('loop')
     set(x,0b10010)   # 300 in binary 100101100
     mov(isr,x)       # 5 msb to isr
     set(x,0b1100)    # 4 lsb
@@ -38,10 +37,7 @@ def ping():
     in_(null,12) # 12 bits = 4096 x 20 = 81920 cycles or ~80 ms
     mov(y,invert(isr))
     label("delay")
-    jmp(y_dec, "delay")   [19]   # end timing loop
-    jmp('loop')                  # and jmp to top
-    
-    
+    jmp(y_dec, "delay")   [19]   # end timing loop   
     
 sm = rp2.StateMachine(0, ping, freq=1000000, set_base=trig, jmp_pin=echo, in_base=echo)
 sm.irq(get_cm)
