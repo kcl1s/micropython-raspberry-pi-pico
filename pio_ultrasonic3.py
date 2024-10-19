@@ -15,7 +15,7 @@ def get_cm(x):
 
 @rp2.asm_pio(set_init=rp2.PIO.OUT_LOW)
 def ping():
-    mov(x,osr)       # mov isr back to x
+    mov(x,osr)       # mov osr back to x prefilled
     set(pins,0) [9]  # set trig to low 10 uSec
     set(pins,1) [9]  # set trig to high 10 uSec
     set(pins,0)      # set trig to low
