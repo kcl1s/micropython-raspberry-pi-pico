@@ -2,6 +2,7 @@ from machine import Pin
 import array
 from time import sleep
 import random
+import rp2
 
 @rp2.asm_pio(set_init=rp2.PIO.OUT_LOW, out_init=rp2.PIO.OUT_LOW,
              out_shiftdir=rp2.PIO.SHIFT_LEFT, autopull=True, pull_thresh=24)
